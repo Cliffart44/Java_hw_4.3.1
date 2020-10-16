@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.7.0</junit.version>
         <jacoco.version>0.8.6</jacoco.version>
-        <lombok.version>1.18.12</lombok.version>
+        <lombok.version>1.18.16</lombok.version>
         <mockito.version>3.5.13</mockito.version>
         <surefire.version>2.22.2</surefire.version>
     </properties>

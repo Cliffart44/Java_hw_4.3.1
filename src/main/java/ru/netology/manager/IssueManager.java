@@ -1,10 +1,11 @@
 package ru.netology.manager;
 
 import ru.netology.domain.Issue;
-import ru.netology.domain.NotFoundException;
+import ru.netology.util.NotFoundException;
 import ru.netology.repository.IssueRepository;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class IssueManager {
     IssueRepository repository;
@@ -46,30 +47,31 @@ public class IssueManager {
     По Label'у
     По Assignee (на кого назначено) */
 
-    public Collection<Issue> filterByAuthor(String author) {
+    public Collection<Issue> filterByAuthor(Predicate<String> predicate) {
         Collection<Issue> result = new ArrayList<>();
         for (Issue item : repository.findAll()) {
-            if (item.matchesAuthor(author)) {
+            if (predicate.test(item.getAuthor())) {
                 result.add(item);
             }
         }
         return result;
     }
 
-    public Collection<Issue> filterByLabel(String label) {
+    public Collection<Issue> filterByLabel(Predicate<Set> predicate) {
         Collection<Issue> result = new ArrayList<>();
+
         for (Issue item : repository.findAll()) {
-            if (item.matchesLabel(label)) {
+            if (predicate.test(item.getLabels())) {
                 result.add(item);
             }
         }
         return result;
     }
 
-    public Collection<Issue> filterByAssignee(String assignee) {
+    public Collection<Issue> filterByAssignee(Predicate<Set> predicate) {
         Collection<Issue> result = new ArrayList<>();
         for (Issue item : repository.findAll()) {
-            if (item.matchesAssignee(assignee)) {
+            if (predicate.test(item.getAssignees())) {
                 result.add(item);
             }
         }
@@ -78,21 +80,21 @@ public class IssueManager {
 
     /* Сортировка */
 
-    public Collection<Issue> sortByCommentsQuantity() {
+    public Collection<Issue> sortByCommentsQuantity(Comparator<Issue> asc) {
         ArrayList<Issue> result = new ArrayList<>();
         for (Issue item : repository.findAll()) {
             result.add(item);
         }
-        Collections.sort(result);
+        Collections.sort(result, asc);
         return result;
     }
 
-    public Collection<Issue> sortByCommentsQuantityReversed(Comparator<Issue> reversed) {
+    public Collection<Issue> sortByCommentsQuantityReversed(Comparator<Issue> desc) {
         ArrayList<Issue> result = new ArrayList<>();
         for (Issue item : repository.findAll()) {
             result.add(item);
         }
-        Collections.sort(result, reversed);
+        Collections.sort(result, desc);
         return result;
     }
 

@@ -1,7 +1,7 @@
 package ru.netology.repository;
 
 import ru.netology.domain.Issue;
-import ru.netology.domain.NotFoundException;
+import ru.netology.util.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +34,7 @@ public class IssueRepository {
         if (findByID(id) != null) {
             for (Issue item : issues) {
                 if (item.getId() == id) {
-                    item.setStatus(false);
+                    item.defineStatus(false);
                 }
             }
         } else {
@@ -46,7 +46,7 @@ public class IssueRepository {
         if (findByID(id) != null) {
             for (Issue item : issues) {
                 if (item.getId() == id) {
-                    item.setStatus(true);
+                    item.defineStatus(true);
                 }
             }
         } else {

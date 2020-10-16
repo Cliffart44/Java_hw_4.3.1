@@ -3,11 +3,12 @@ package ru.netology.manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.netology.domain.Issue;
-import ru.netology.domain.IssueComparator;
+import ru.netology.util.IssueComparatorAsc;
+import ru.netology.util.IssueComparatorDesc;
 import ru.netology.repository.IssueRepository;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,10 +16,11 @@ class IssueManagerTest {
     int nonexistentID = 4;
     IssueRepository repository = new IssueRepository();
     IssueManager manager = new IssueManager(repository);
-    IssueComparator c = new IssueComparator();
-    Issue first = new Issue(1, 20, false, "jsedding", "Task", "Master");
-    Issue second = new Issue(2, 5, false, "paschi", "Bug", "Junior");
-    Issue third = new Issue(3, 10, true, "paschi", "Bug", "Master");
+    IssueComparatorAsc straight = new IssueComparatorAsc();
+    IssueComparatorDesc reversed = new IssueComparatorDesc();
+    Issue first = new Issue(1, 20, false, "jsedding", new HashSet<String>(Arrays.asList("Task")), new HashSet<String>(Arrays.asList("Master")));
+    Issue second = new Issue(2, 5, false, "paschi", new HashSet<String>(Arrays.asList("Bug")), new HashSet<String>(Arrays.asList("Junior")));
+    Issue third = new Issue(3, 10, true, "paschi", new HashSet<String>(Arrays.asList("Bug")), new HashSet<String>(Arrays.asList("Master")));
 
     @BeforeEach
     void setUp() {
@@ -29,7 +31,7 @@ class IssueManagerTest {
 
     @Test
     public void shouldAddOne() {
-        Issue fourth = new Issue(4, 7, true, "jsedding", "Bug", "Master");
+        Issue fourth = new Issue(4, 7, true, "jsedding", new HashSet<String>(Arrays.asList("Bug")), new HashSet<String>(Arrays.asList("Master")));
         manager.add(fourth);
         Collection<Issue> expected = List.of(first, second, third, fourth);
         Collection<Issue> actual = manager.getAll();
@@ -59,38 +61,44 @@ class IssueManagerTest {
 
     @Test
     public void shouldFilterByAuthor() {
+        String author = "paschi";
+        Predicate<String> equalAuthor = t -> t.equals(author);
         Collection<Issue> expected = List.of(second, third);
-        Collection<Issue> actual = manager.filterByAuthor("paschi");
+        Collection<Issue> actual = manager.filterByAuthor(equalAuthor);
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldFilterByLabel() {
+        Set<String> label = new HashSet<>(Arrays.asList("Bug"));
+        Predicate<Set> equalLabel = t -> t.equals(label);
         Collection<Issue> expected = List.of(second, third);
-        Collection<Issue> actual = manager.filterByLabel("Bug");
+        Collection<Issue> actual = manager.filterByLabel(equalLabel);
         assertEquals(expected, actual);
     }
 
     @Test
     public void shouldFilterByAssignee() {
+        Set<String> assignee = new HashSet<>(Arrays.asList("Master"));
+        Predicate<Set> equalAssignee = t -> t.equals(assignee);
         Collection<Issue> expected = List.of(first, third);
-        Collection<Issue> actual = manager.filterByAssignee("Master");
+        Collection<Issue> actual = manager.filterByAssignee(equalAssignee);
         assertEquals(expected, actual);
     }
 
     /* Сортировка */
 
     @Test
-    public void shouldSortByCommentsQuantity() {
+    public void shouldSortByCommentsQuantityAsc() {
         Collection<Issue> expected = List.of(first, third, second);
-        Collection<Issue> actual = manager.sortByCommentsQuantity();
+        Collection<Issue> actual = manager.sortByCommentsQuantity(straight);
         assertEquals(expected, actual);
     }
 
     @Test
-    public void shouldSortByCommentsQuantityReversed() {
+    public void shouldSortByCommentsQuantityDesc() {
         Collection<Issue> expected = List.of(second, third, first);
-        Collection<Issue> actual = manager.sortByCommentsQuantityReversed(c);
+        Collection<Issue> actual = manager.sortByCommentsQuantityReversed(reversed);
         assertEquals(expected, actual);
     }
 
